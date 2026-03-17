@@ -320,6 +320,72 @@ clip-path polygon. Not a gradient.
 
 ---
 
+## Interaction States
+
+This section describes empty states, modal triggers, and component-level interactions
+that must be explicitly implemented. Do not infer defaults from sample data — follow
+the states described here exactly.
+
+### Fund List — Auto mode entry state
+- The "Total Amount to Sell" input field is **empty on first load**
+- The stats bar (sale amount, estimated tax, effective rate, rebalancing impact) is
+  **hidden until the user enters an amount and clicks "Get Recommendation"**
+- The fund table is **hidden until a recommendation exists**
+- The button label is "Get Recommendation" on first visit; changes to "Recalculate"
+  after a recommendation has been returned
+- Do NOT pre-populate the amount field with any value
+
+### Fund List — Cards view
+- The Table/Cards toggle switches the fund list between two distinct layouts:
+  - **Table view:** rows with columns (Fund, Method, Value, Gain/Loss, Sell amount, Rationale)
+  - **Cards view:** one card per fund, showing the same data in a stacked card layout
+    with the fund name prominent, method selector, gain/loss indicators, and sell amount
+- Both views must be fully implemented and functional
+- The toggle must visually indicate the active view
+
+### Wait & Save — modal dialog
+The Wait & Save banner (shown when short-term lots are near long-term conversion) is
+a trigger for a blocking modal dialog. The banner itself is not the full interaction.
+
+**Modal trigger:** clicking anywhere on the Wait & Save banner, or a "Learn more" /
+"See details" link within it, opens a modal dialog.
+
+**Modal content:**
+- Headline: "You could save $[X] by waiting [N] days"
+- Explanation of which lots are short-term and when they convert
+- Table showing: Fund | Lot date | Converts LT | Current tax | Tax if you wait | Savings
+- Two actions:
+  - "Remind me in 40 days" — dismisses modal, sets a reminder (can be non-functional
+    in prototype but button must exist)
+  - "Adjust sale to avoid these lots" — dismisses modal and removes the near-term
+    short-term lots from the recommendation (can reload recommendation in prototype)
+- "Proceed with today's recommendation" link — dismisses modal without changes
+
+### Scenario Analysis — scenario naming
+- Each scenario has an editable name displayed as a heading ("Scenario A — Minimize Tax")
+- Clicking the scenario name heading makes it editable inline (text input replaces heading)
+- Pressing Enter or clicking away saves the new name
+- The name persists for the session
+
+### Scenario Analysis — Scenario B entry state
+- Scenario B is **not pre-populated** when first added
+- Clicking "+ Add Scenario B" opens Scenario B with **all fund amounts set to $0**
+- The user enters amounts manually; tax recalculates live as they type
+- Do NOT pre-fill Scenario B with any recommended or default amounts
+
+### Confirmation — Workflow B differentiation
+- The Confirmation screen must display differently depending on which workflow executed:
+  - **Workflow A:** shows "Tax Summary — Optimised" header, includes AI rationale note
+    explaining what the optimisation engine saved vs a non-optimised approach
+  - **Workflow B:** shows "Tax Summary — Manual Entry" header, omits AI rationale.
+    Includes a note: "Automated optimisation would have reduced your tax by $[X]
+    (Y% effective rate) — consider using the engine next time for potential savings"
+- Executing from Scenario A in comparison view uses Workflow A confirmation
+- Executing from Scenario B in comparison view uses Workflow B confirmation
+- These must be distinct rendered states, not the same component with a label change
+
+---
+
 ## How to Run
 
 ### Backend (FastAPI)
