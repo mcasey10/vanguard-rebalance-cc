@@ -320,6 +320,43 @@ clip-path polygon. Not a gradient.
 
 ---
 
+## How to Run
+
+### Backend (FastAPI)
+```bash
+cd api
+pip install -r requirements.txt
+uvicorn main:app --reload --port 8001
+```
+The API runs on `http://localhost:8001`. Port 8001 is used to avoid conflict with
+other local services.
+
+### Frontend (Next.js)
+```bash
+npm run dev
+# Runs on http://localhost:3001
+```
+
+### Environment
+Create `.env.local` in the project root (not in `/api`):
+```
+NEXT_PUBLIC_API_URL=http://localhost:8001
+```
+The frontend reads `NEXT_PUBLIC_API_URL` for all API calls. This must be set before
+running `npm run dev` — restart the dev server after creating the file.
+
+### CORS
+The backend must allow requests from `http://localhost:3001`. Ensure
+`CORSMiddleware` in `api/main.py` includes this origin.
+
+### Startup order
+1. Start the backend first: `uvicorn main:app --reload --port 8001` (from `/api`)
+2. Create `.env.local` with `NEXT_PUBLIC_API_URL=http://localhost:8001`
+3. Start the frontend: `npm run dev` (from project root)
+4. Open `http://localhost:3001/portfolio/balances`
+
+---
+
 ## Scope Notes
 
 This is a **functional prototype** — real computation and real API calls, no data
