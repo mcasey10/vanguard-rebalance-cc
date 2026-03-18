@@ -361,6 +361,77 @@ clip-path polygon. Not a gradient.
 
 ---
 
+## Design Consistency Rules
+
+These rules apply globally across all screens. Claude Code must verify consistency
+across all pages before considering any implementation complete — do not fix one
+screen without checking all others apply the same pattern.
+
+### Action button and footer pattern
+There are two distinct footer patterns used in this application — they must be
+applied consistently and never mixed:
+
+**Pattern A — Dark stats footer with inline actions (Fund List Auto and Manual):**
+- A full-width dark background bar pinned to the bottom of the viewport
+- Contains: Sale amount · ST Capital Gains · LT Capital Gains · Losses Harvested ·
+  Est. Total Tax · Eff. Tax Rate
+- Action buttons ("Analyze Scenarios", "Execute This Recommendation") sit to the
+  RIGHT of the stats bar, inside the same dark footer row
+- "← Back to Balances" and "Analyze Scenarios" links sit above the dark footer,
+  inline in the page content at the bottom of the fund list
+
+**Pattern B — Dark action-only footer (Scenario Analysis):**
+- A full-width dark background bar pinned to the bottom of the viewport
+- Contains only action buttons: "Execute Scenario A" and "Execute Scenario B"
+  (or "Execute This Recommendation" in single scenario view)
+- In comparison view: shows savings callout between the two execute buttons
+- No stats data in this footer — stats are shown inline in the page content above
+
+**Never mix these patterns.** Manual mode uses Pattern A. Auto mode uses Pattern A.
+Scenario Analysis uses Pattern B. Confirmation has no sticky footer.
+
+### Annotation icons ("A" badges)
+The orange/amber circled "A" badge icons that appear throughout the application are
+carryovers from the Figma wireframe annotation system. They must be handled as follows:
+
+**Remove entirely** (no real-world equivalent, no interaction):
+- "A" badges next to fund names in the fund table
+- "A" badges next to column headers
+- "A" badges next to "Recommended Sell" or similar labels
+- Any "A" badge that has no hover interaction or tooltip wired to it
+
+**Keep with a meaningful informational tooltip** (these have a real-world equivalent
+as contextual help icons):
+- Next to "Automated" mode label — tooltip explains: "The optimization engine
+  analyzes your tax lots and recommends which funds to sell to minimize taxes while
+  improving your portfolio balance"
+- Next to "Fund" column header in Auto mode — tooltip explains: "Funds recommended
+  for sale are highlighted. Others are shown for reference."
+- Next to "Est. Tax" in Scenario Analysis — tooltip explains: "Estimated tax is
+  based on your current federal and state rates. Consult a tax advisor for exact figures."
+
+For retained icons, use a standard info icon (ⓘ) styled in the interactive blue
+(`--interactive: #1255CC`) rather than the orange "A" annotation style. The "A"
+annotation style must not appear in the functional prototype.
+
+### Navigation consistency
+- "← Back to Balances" appears bottom-left in page content on Fund List screens
+- "Analyze Scenarios" appears bottom-right in page content on Fund List screens,
+  above the dark footer
+- Sub-navigation tabs (Fund List | Scenario Analysis) appear consistently on all
+  sell & rebalance screens
+- The Automated/Manual toggle and Table/Cards toggle appear on Fund List screens only
+
+### Heading styles
+- Page heading ("Fund List", "Scenario Analysis") uses the same typographic
+  treatment on every screen — large, bold, left-aligned, below the sub-nav tabs
+- Sub-headings and section labels use consistent weight and colour across screens
+
+### Empty/dash display
+- When a calculated value is not applicable (no sale amount, not recommended),
+  display "—" consistently across all screens and both modes
+- Never show $0 where "—" is appropriate (e.g. gain/loss on a fund with no sale)
+
 ## Interaction States
 
 This section describes empty states, modal triggers, and component-level interactions
@@ -491,6 +562,16 @@ from the Fund List in Manual mode:
 - Do NOT use the native HTML `title` attribute — it produces a plain browser tooltip
   that does not match the design
 
+### Confirmation — vertical spacing
+- The Confirmation screen must fit within a single viewport height without scrolling
+  on a standard 1440×900 display
+- Reduce vertical padding between sections to achieve this — the goal is that the
+  action buttons (Return to Portfolio, Download Confirmation PDF, View Order Status,
+  Start another transaction) are visible without scrolling
+- Section order: Success banner → Orders Placed + Tax Summary (side by side) →
+  Portfolio Rebalancing Impact tiles → What Happens Next timeline → Action buttons
+- Use compact spacing (8–12px between sections) rather than generous spacing
+
 ### Confirmation — passing executed amounts correctly
 The Confirmation screen must display the exact amounts that were in Scenario Analysis
 at the time the user clicked Execute — not the recommendation amounts.
@@ -521,6 +602,45 @@ Confirmation page reads those params — it does not fetch or recalculate.
 - These must be distinct rendered states, not the same component with a label change
 
 ---
+
+## Balances Screen — Onboarding Coach Marks
+
+The Balances screen serves as the entry point for a functional prototype demo. Because
+the surrounding portal navigation is incomplete (most tabs and links do not work), the
+screen must guide the user toward the working functionality. This is implemented as two
+overlapping onboarding elements:
+
+### Promotional banner
+A dismissable banner appears at the top of the account list area (below the section
+tabs, above the account rows). It explains the Sell & Rebalance feature and directs
+the user to the entry points.
+
+**Banner content:**
+- Headline: "Optimize your next withdrawal with Sell & Rebalance"
+- Body: "Use this tool when selling from your portfolio to minimize capital gains tax
+  and maintain your target allocation. Enter a sell amount and your cost basis lots
+  are automatically analyzed to recommend the optimal funds and quantities to sell.
+  You can also compare alternative scenarios side by side using manual mode to see
+  how different sell amounts affect your tax impact."
+- Sub-text: "To get started, click Sell & Rebalance in the navigation above, or
+  select Sell from this account on your Brokerage Account row."
+- CTA button: "Review sell & rebalance options →" (navigates to Fund List Auto mode)
+- Dismiss (×) button top-right — hides the banner for the session
+
+### Pulsing coach marks
+Two elements pulse with a subtle animation to draw attention on first load:
+1. The **"Sell & Rebalance"** tab in the section navigation
+2. The **"Sell from this account"** button on the Brokerage Account row
+
+**Pulse animation:** a soft glow/ring that expands and fades, repeating 3 times then
+stopping. Use a CSS keyframe animation — do not loop indefinitely.
+
+**"Sell from this account" button:** always visible on the Brokerage Account row
+(not hover-reveal). Styled as a pill outline button. Only appears on the Brokerage
+Account row — not on IRA or other account types.
+
+The coach marks stop pulsing after the user has interacted with either element or
+after 3 animation cycles, whichever comes first.
 
 ## How to Run
 
