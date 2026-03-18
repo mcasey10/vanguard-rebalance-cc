@@ -336,12 +336,20 @@ the states described here exactly.
 - Do NOT pre-populate the amount field with any value
 
 ### Fund List — Cards view
-- The Table/Cards toggle switches the fund list between two distinct layouts:
-  - **Table view:** rows with columns (Fund, Method, Value, Gain/Loss, Sell amount, Rationale)
-  - **Cards view:** one card per fund, showing the same data in a stacked card layout
-    with the fund name prominent, method selector, gain/loss indicators, and sell amount
-- Both views must be fully implemented and functional
-- The toggle must visually indicate the active view
+- The Table/Cards toggle switches the fund list between two distinct layouts
+- The Cards layout is defined in the Figma file as frame **S3 - Fund List Manual Card View**
+  — this frame must be used as the visual reference for the cards implementation
+- S2 (Table view) and S3 (Cards view) are two toggle states of the same route
+  (`/portfolio/sell-rebalance/manual`) — they are NOT separate pages or routes
+- **Table view:** rows with columns (Fund, Method, Value, ST Gain/Loss, LT Gain/Loss,
+  Sell amount, Shares)
+- **Cards view:** matches S3 Figma frame exactly — each fund is a full-width card with
+  the fund name and ticker prominent, target/current allocation percentages, gain/loss
+  indicators, method selector, sell amount input, and lot expansion inline. Cards with
+  a Wait & Save opportunity show the warning inline within the card.
+- The toggle applies in both Auto and Manual modes
+- The toggle must visually indicate the active view (filled/dark = active)
+- Switching between Table and Cards must not reset any entered sell amounts
 
 ### Wait & Save — modal dialog
 The Wait & Save banner (shown when short-term lots are near long-term conversion) is
@@ -385,14 +393,6 @@ a trigger for a blocking modal dialog. The banner itself is not the full interac
   or the warning text must open the same modal dialog as in Auto mode
 - The modal content is identical in both modes — it shows the lot conversion data
   and savings regardless of which mode the user is in
-
-### Fund List — Cards view (Manual mode)
-- The Cards view toggle must work in **both Auto and Manual modes**
-- In Manual mode, each card must include an editable sell amount input field
-- The card layout in Manual mode mirrors the table layout in terms of data shown:
-  fund name, method selector, total value, ST/LT gain indicators, sell amount input,
-  approximate shares
-- Switching between Table and Cards in Manual mode must not reset any entered amounts
 
 ### Workflow B — passing manual amounts to Scenario Analysis
 This is the most critical Workflow B behaviour. When the user clicks "Analyze Scenario"
