@@ -410,10 +410,43 @@ from the Fund List in Manual mode:
   amounts have been modified
 
 ### Scenario Analysis — scenario name hover
-- Hovering over a scenario name heading displays a tooltip summarising that scenario:
-  total sale amount, estimated tax, effective rate
-- The tooltip appears on hover without requiring a click
-- Example: hovering "Scenario A — Minimize Tax" shows "$10,000 · $532 tax · 5.32%"
+- Hovering over a scenario name heading displays a **styled dark popover card**
+  — not a native browser title attribute
+- The popover is a custom component with dark background (`--text: #040505`),
+  white text, `border-radius: 6px`, padding, and a drop shadow
+- It appears below the scenario name heading on hover
+
+**Popover content — three rows:**
+- **Sell:** list of non-zero fund amounts, e.g. "VTSAX $6,000 + VBTLX $4,000"
+- **Tax:** estimated total tax and effective rate, e.g. "$532 est. (5.32% effective rate)"
+- **Note:** a short contextual description of what makes this scenario distinct:
+  - For the unmodified recommendation: "Tax-optimised · harvests VBTLX loss to offset VTSAX gains"
+  - For a user-modified scenario: "User-modified · [brief description of the dominant change,
+    e.g. 'prioritizes reducing US equity drift']"
+  - For a manual entry scenario: "Manual entry · [brief description]"
+
+- The Note field should be generated dynamically based on the scenario state —
+  it is not a static string
+- Do NOT use the native HTML `title` attribute — it produces a plain browser tooltip
+  that does not match the design
+
+### Confirmation — passing executed amounts correctly
+The Confirmation screen must display the exact amounts that were in Scenario Analysis
+at the time the user clicked Execute — not the recommendation amounts.
+
+- When executing Scenario A from Auto mode: show the Scenario A amounts (which may
+  have been edited by the user, not necessarily the original recommendation)
+- When executing Scenario A from Manual mode (Workflow B): show the manual amounts
+  the user entered, which were carried through to Scenario Analysis
+- When executing Scenario B: show Scenario B amounts
+- The Confirmation screen must never call `/recommend` — it reads only the amounts
+  passed to it via URL params or navigation state
+- All amounts shown in the Orders Placed table must match exactly what was displayed
+  in Scenario Analysis immediately before the user clicked Execute
+
+**Implementation note:** The Execute button must pass the current Scenario A (or B)
+fund amounts as URL parameters or router state to the Confirmation page. The
+Confirmation page reads those params — it does not fetch or recalculate.
 
 ### Confirmation — Workflow B differentiation
 - The Confirmation screen must display differently depending on which workflow executed:
