@@ -77,6 +77,23 @@ examines lot detail (acquisition date, cost per share, short vs long term status
 unrealised gain/loss) to decide how much of that fund to sell and which accounting
 method to use.
 
+### Fund List — terminology and value consistency
+- The column showing the current market value of each fund holding must use the
+  **same label in both Auto and Manual modes**: "Current Value"
+- The value must be calculated identically in both modes: `shares × current_nav`
+- Do NOT use "Total Value" in Manual mode — all screens use "Current Value"
+- The calculated value must match exactly between modes for the same fund
+  (e.g. VBTLX: 1271 × $92.85 = $117,963.35 in both Auto and Manual)
+
+### Fund List — Manual mode stats bar recalculation
+- The bottom stats bar (Sale, ST Capital Gains, LT Capital Gains, Losses Harvested,
+  Est. Total Tax, Eff. Tax Rate) must reflect the current sell amounts at all times
+- The stats bar must call `/scenario` on page load with the initial sell amounts
+  (even if pre-populated from URL params) — do not wait for the user to change an
+  amount before making the first calculation
+- If VBTLX shows a loss in the LT Gain/Loss column, Losses Harvested in the footer
+  must reflect that loss — they must always be consistent
+
 ### Fund List — Manual mode gain/loss display
 - The ST Gain/Loss and LT Gain/Loss columns in Manual mode must show **"—"** (dash)
   for any fund where the sell amount is $0 or empty
