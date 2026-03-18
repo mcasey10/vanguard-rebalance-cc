@@ -373,6 +373,48 @@ a trigger for a blocking modal dialog. The banner itself is not the full interac
 - The user enters amounts manually; tax recalculates live as they type
 - Do NOT pre-fill Scenario B with any recommended or default amounts
 
+### Fund List — Auto/Manual mode switching
+- The "Total Amount to Sell" input value must **persist when switching between Auto
+  and Manual modes**
+- Switching from Auto → Manual or Manual → Auto must NOT reset the amount field
+- The amount entered by the user belongs to the session, not to the mode
+
+### Fund List — Wait & Save modal trigger (Manual mode)
+- The Wait & Save modal must be triggerable in **both Auto and Manual modes**
+- In Manual mode, when a fund row displays the WAIT & SAVE badge, clicking the badge
+  or the warning text must open the same modal dialog as in Auto mode
+- The modal content is identical in both modes — it shows the lot conversion data
+  and savings regardless of which mode the user is in
+
+### Fund List — Cards view (Manual mode)
+- The Cards view toggle must work in **both Auto and Manual modes**
+- In Manual mode, each card must include an editable sell amount input field
+- The card layout in Manual mode mirrors the table layout in terms of data shown:
+  fund name, method selector, total value, ST/LT gain indicators, sell amount input,
+  approximate shares
+- Switching between Table and Cards in Manual mode must not reset any entered amounts
+
+### Workflow B — passing manual amounts to Scenario Analysis
+This is the most critical Workflow B behaviour. When the user clicks "Analyze Scenario"
+from the Fund List in Manual mode:
+- The user's manually entered amounts must be passed directly to Scenario Analysis
+  as the starting state for Scenario A
+- Scenario Analysis must NOT call `/recommend` when arriving from Manual mode
+- Scenario Analysis must NOT overwrite the user's amounts with recommendation values
+- The correct flow: Manual mode amounts → passed via URL params or session state →
+  Scenario Analysis reads them → calls `/scenario` with those amounts → displays results
+- The sub-heading in Scenario Analysis should reflect the source:
+  - From Auto mode: "Pre-filled from Recommendation · Edit any amount to recalculate"
+  - From Manual mode: "Based on your manual entries · Edit any amount to recalculate"
+- "Reset to Recommendation" should only appear when arriving from Auto mode and
+  amounts have been modified
+
+### Scenario Analysis — scenario name hover
+- Hovering over a scenario name heading displays a tooltip summarising that scenario:
+  total sale amount, estimated tax, effective rate
+- The tooltip appears on hover without requiring a click
+- Example: hovering "Scenario A — Minimize Tax" shows "$10,000 · $532 tax · 5.32%"
+
 ### Confirmation — Workflow B differentiation
 - The Confirmation screen must display differently depending on which workflow executed:
   - **Workflow A:** shows "Tax Summary — Optimised" header, includes AI rationale note
