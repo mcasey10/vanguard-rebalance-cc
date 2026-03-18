@@ -445,6 +445,16 @@ a trigger for a blocking modal dialog. The banner itself is not the full interac
 - The modal content is identical in both modes — it shows the lot conversion data
   and savings regardless of which mode the user is in
 
+### Fund List — Manual mode footer layout
+- The sticky footer stats bar and the "Analyze Scenario" button must not overlap
+- The "Analyze Scenario" button sits at the bottom of the page content, above the
+  sticky footer
+- The page content must have sufficient bottom padding to ensure the sticky footer
+  does not cover the button or any other page content when scrolled to the bottom
+- The footer stats bar must display the /scenario API response as its final state —
+  no subsequent state update should overwrite the API response values with zeros
+  or nulls after the response arrives
+
 ### Workflow B — passing manual amounts to Scenario Analysis
 This is the most critical Workflow B behaviour. When the user clicks "Analyze Scenario"
 from the Fund List in Manual mode:
@@ -540,6 +550,26 @@ running `npm run dev` — restart the dev server after creating the file.
 ### CORS
 The backend must allow requests from `http://localhost:3001`. Ensure
 `CORSMiddleware` in `api/main.py` includes this origin.
+
+### API warmup on Balances page load
+The backend is hosted on Hugging Face Spaces free tier, which has a cold start time
+of 30–60 seconds after inactivity. To avoid the first meaningful API call (on the
+Fund List page) timing out, the Balances page must silently warm up the backend on
+mount.
+
+**Implementation:**
+- On mount, the Balances page fires a GET request to the backend root endpoint (`/`)
+- The request uses `AbortSignal.timeout(30000)` — 30 second timeout matching HF
+  cold start time
+- The result is silently swallowed with `.catch(() => {})` — no state update, no
+  error display, no loading indicator shown to the user
+- Empty dependency array `[]` — fires once on mount only, not on re-renders
+- Use `process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8001'` as the base URL
+- The root endpoint (`/`) already exists in `api/main.py` and returns a status
+  message — no backend changes needed
+
+This means by the time the user reads the Balances screen and navigates to the Fund
+List, the backend is already warm and the first real API call responds immediately.
 
 ### Startup order
 1. Start the backend first: `uvicorn main:app --reload --port 8001` (from `/api`)
