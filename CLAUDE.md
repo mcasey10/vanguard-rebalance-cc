@@ -221,6 +221,19 @@ solely by whether acquisition_date is within or beyond one year of today.
 **VIGAX:** Long-term lot, acquired 2020-09-01, cost $130/share
 **VXUS:** Long-term lot, acquired 2021-11-15, cost $55.20/share
 
+### Data integrity requirement
+The sample data must tell a **consistent tax loss harvesting story** across all screens
+and modes. The following values are canonical and must not be altered:
+
+- **VBTLX** is the only fund with an unrealised loss. It has a single long-term loss
+  lot: 1271 shares acquired 2022-03-15 at $135.10/share. At current NAV of $92.85
+  this is an unrealised loss of approximately −$53,720. This loss is what enables
+  tax loss harvesting and must display consistently in Auto mode, Manual mode, lot
+  expansion, and Scenario Analysis.
+- If VBTLX shows a gain in any view, the lot data in `lib/data.ts` is incorrect.
+- The VBTLX loss is the narrative backbone of the tool — without it, the tax
+  optimisation story does not make sense to a user or a recruiter reviewing the demo.
+
 ### Canonical recommendation output (for $10,000 withdrawal)
 
 | Fund | Sell Amount | Method | LT Gain/Loss | Est. Tax |
@@ -384,8 +397,18 @@ a trigger for a blocking modal dialog. The banner itself is not the full interac
 ### Fund List — Auto/Manual mode switching
 - The "Total Amount to Sell" input value must **persist when switching between Auto
   and Manual modes**
-- Switching from Auto → Manual or Manual → Auto must NOT reset the amount field
-- The amount entered by the user belongs to the session, not to the mode
+- Auto and Manual are separate routes (`/sell-rebalance` and `/sell-rebalance/manual`)
+  — state is not shared between routes unless explicitly passed
+- The mode toggle links must include the current amount as a URL parameter:
+  - Switching Auto → Manual: navigate to `/sell-rebalance/manual?amount=10000`
+  - Switching Manual → Auto: navigate to `/sell-rebalance?amount=10000`
+- Each page must read the `?amount` URL parameter on load and pre-populate the
+  Total Amount to Sell field with that value
+- Do NOT reset the amount field when switching modes under any circumstances
+- When Auto mode loads with an `?amount` URL parameter present, automatically
+  trigger a recommendation fetch for that amount on load — do not show the empty
+  state. The user has already indicated their withdrawal amount and expects to see
+  the recommendation, not start over.
 
 ### Fund List — Wait & Save modal trigger (Manual mode)
 - The Wait & Save modal must be triggerable in **both Auto and Manual modes**
