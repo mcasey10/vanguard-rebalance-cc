@@ -77,6 +77,17 @@ examines lot detail (acquisition date, cost per share, short vs long term status
 unrealised gain/loss) to decide how much of that fund to sell and which accounting
 method to use.
 
+### Fund List — Manual mode gain/loss display
+- The ST Gain/Loss and LT Gain/Loss columns in Manual mode must show **"—"** (dash)
+  for any fund where the sell amount is $0 or empty
+- These columns only show a calculated value when the user has entered a sell amount
+  greater than zero — they represent the gain/loss **on the sale being entered**,
+  not the total unrealised gain/loss on the holding
+- This matches Auto mode behaviour where non-recommended funds (sell = $0) show "—"
+  in the gain/loss columns
+- Do NOT display the total holding-level unrealised gain/loss in these columns —
+  that would mislead the user into thinking they have already decided to sell
+
 ### Accounting method selection (Manual mode)
 Each fund in Manual mode has an accounting method selector (MinTax, FIFO, LIFO,
 Specific Identification). The method determines which lots are selected when the
